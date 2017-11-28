@@ -4,8 +4,7 @@
   "description": "tinypng命令行工具",
   "main": "index.js",
   "bin": {
-    "tinypng": "index.js",
-    "chalkA": "chalkAnimation.js"
+    "tinypng": "index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
