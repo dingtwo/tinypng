@@ -1,0 +1,22 @@
+{
+  "name": "tinypng",
+  "version": "1.0.0",
+  "description": "tinypng命令行工具",
+  "main": "index.js",
+  "bin": {
+    "tinypng": "index.js",
+    "chalkA": "chalkAnimation.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "dingjz",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "chalk-animation": "^1.3.0",
+    "tinify": "^1.5.0",
+    "tinygradient": "^0.3.1",
+    "yargs": "^10.0.3"
+  }
+}
