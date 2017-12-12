@@ -20,7 +20,8 @@ yargs.command("path [img]", "选择需要压缩的图片路径", yarg => {
     }, argv => {
         console.log(chalk.blue(argv.img))
         let imgPath = argv.img
-        fs.readdir(path.resolve(__dirname, imgPath), (error, files) => {
+        let pwd = process.cwd()
+        fs.readdir(path.resolve(pwd, imgPath), (error, files) => {
             if (error) {
                 console.log(chalk.bgRed(error))
                 process.exit()
@@ -40,11 +41,11 @@ yargs.command("path [img]", "选择需要压缩的图片路径", yarg => {
                 if (index > 0) {
                     tinyStr += file + " | "
 
-                    let toPath = path.resolve(__dirname, imgPath, "tiny");
+                    let toPath = path.resolve(pwd, imgPath, "tiny");
                     !fs.existsSync(toPath) && fs.mkdirSync(toPath)
                     // Add a new dot every second
                     promiseArr.push(new Promise((resolve, reject) => {
-                        tiny(path.resolve(__dirname, imgPath, file), path.resolve(__dirname, imgPath, "tiny", file), (err) => {
+                        tiny(path.resolve(pwd, imgPath, file), path.resolve(pwd, imgPath, "tiny", file), (err) => {
                             if (err) {
                                 console.log(chalk.bgRed(err))
                                 reject(err)
