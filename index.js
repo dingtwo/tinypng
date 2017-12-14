@@ -1,22 +1,27 @@
 #!/usr/bin/env node
 
-const chalkAnimation = require('chalk-animation');
 let tinify = require("tinify"),
     yargs = require('yargs'),
     chalk = require('chalk'),
     fs = require('fs'),
     path = require('path');
 tinify.key = "6Z9kSwJupSrTcWyv60xV6XD5He8SFOzQ";
-
+const ora = require('ora');
 const miniTypes = ["jpg", "jpeg", "png"]
+const spinner = ora('压缩中')
 let checkImgType = (file) => {
-    return miniTypes.findIndex(type => path.extname(file).includes(type)) > 0
+    return minTypes.findIndex(type => path.extname(file).includes(type)) > 0
 }
 
 let tiny = (fromPath, toPath, cb) => {
     var source = tinify.fromFile(fromPath);
     source.toFile(toPath, cb);
 }
+
+/**
+ * 压缩目录下所有符合条件的图片
+ * @param {string} dir 
+ */
 const tinyDir = (dir) => {
     fs.readdir(dir, (error, files) => {
         if (error) {
@@ -24,15 +29,9 @@ const tinyDir = (dir) => {
             process.exit()
         }
         let promiseArr = [];
-        let rainbow = chalkAnimation.neon('压缩中...');
-        let str = "压缩中."
-        let timer = setInterval(() => {
-            console.log(str)
-            str += "."
-        }, 1000)
         let tinyStr = "以下文件即将开始压缩:"
+
         files.forEach(file => {
-            // 类型是否符合
             if (checkImgType(file)) {
                 tinyStr += file + " | "
                 let toPath = path.join(dir, "tiny");
@@ -49,25 +48,37 @@ const tinyDir = (dir) => {
             }
         })
         console.log(chalk.yellow(tinyStr))
+        spinner.start();
         Promise.all(promiseArr).then(res => {
-            console.log(chalk.bgGreen("转换完成!"))
-            // rainbow.stop()
-            clearInterval(timer)
+            spinner.color = "green";
+            spinner.text = "转换完成!"
+            spinner.succeed()
         })
     })
 }
 
+/**
+ * 压缩文件
+ * @param {string} file 
+ */
 const tinyFile = (file) => {
     console.log(`开始压缩文件${file}`)
+    spinner.start();
     if (checkImgType(file)) {
         let toPath = path.join(path.parse(file).dir, "tiny");
         !fs.existsSync(toPath) && fs.mkdirSync(toPath)
-        console.log(path.join(toPath, path.basename(file)))
         tiny(file, path.join(toPath, path.basename(file)), (err) => {
-            console.log(err)
+            if (err) {
+                console.log(chalk.bgRed(err))
+                process.exit()
+            }
+            spinner.color = "green";
+            spinner.text = "转换完成!"
+            spinner.succeed()
         })
     } else {
         console.log(chalk.bgRed("不支持的类型"))
+        process.exit()
     }
 }
 
@@ -85,7 +96,6 @@ yargs.command("path [img]", "选择需要压缩的图片路径", yarg => {
         let imgPath = argv.img
         let pwd = process.cwd()
         let resultPath = path.join(pwd, imgPath)
-        console.log(resultPath)
         let isFile = fs.statSync(resultPath).isFile()
         isFile ? tinyFile(resultPath) : tinyDir(resultPath)
     })
