@@ -10,7 +10,7 @@ const ora = require('ora');
 const miniTypes = ["jpg", "jpeg", "png"]
 const spinner = ora('压缩中')
 let checkImgType = (file) => {
-    return minTypes.findIndex(type => path.extname(file).includes(type)) > 0
+    return miniTypes.findIndex(type => path.extname(file).includes(type)) > 0
 }
 
 let tiny = (fromPath, toPath, cb) => {
@@ -94,6 +94,7 @@ yargs.command("path [img]", "选择需要压缩的图片路径", yarg => {
     }, argv => {
         console.log(chalk.blue(argv.img))
         let imgPath = argv.img
+        // FIXME: 绝对路径时path.join不对
         let pwd = process.cwd()
         let resultPath = path.join(pwd, imgPath)
         let isFile = fs.statSync(resultPath).isFile()
